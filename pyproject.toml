@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "megafontst"
+version = "0.1.0"
+description = ""
+authors = ["Сергей <sergey.vasilev.98@mail.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+dotenv = "^0.9.9"
+clickhouse-driver = "^0.2.9"
+uvicorn = "^0.35.0"
+h3 = "^4.3.0"
+pandas = "^2.3.1"
+folium = "^0.20.0"
+fastapi = "^0.116.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
