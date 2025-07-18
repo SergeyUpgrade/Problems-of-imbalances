@@ -1,12 +1,70 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Покрытие сети</title>
-    <meta charset="utf-8" />
+    <title>LTE Coverage Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map { height: 600px; }
+        #coverage-image { max-width: 100%; }
+    </style>
 </head>
 <body>
-    <h1>Карта покрытия (Band {{ band }})</h1>
-    <div id="map" style="width: 100%; height: 800px;"></div>
-    <iframe src="/map.html" width="100%" height="800px"></iframe>
+    <h1>LTE Coverage Visualization</h1>
+
+    <div id="map"></div>
+
+    <div>
+        <h2>Coverage Map</h2>
+        <img id="coverage-image" src="" alt="Coverage Map">
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Инициализация карты Leaflet
+        const map = L.map('map').setView([52.2363, 104.6001], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // При изменении области карты запрашиваем данные
+        map.on('moveend', function() {
+            const bounds = map.getBounds();
+            fetch('/api/coverage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    min_lat: bounds.getSouth(),
+                    max_lat: bounds.getNorth(),
+                    min_lon: bounds.getWest(),
+                    max_lon: bounds.getEast()
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('coverage-image').src = `data:image/png;base64,${data.map_image}`;
+            });
+        });
+
+        // Первоначальная загрузка
+        const bounds = map.getBounds();
+        fetch('/api/coverage', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                min_lat: bounds.getSouth(),
+                max_lat: bounds.getNorth(),
+                min_lon: bounds.getWest(),
+                max_lon: bounds.getEast()
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('coverage-image').src = `data:image/png;base64,${data.map_image}`;
+        });
+    </script>
 </body>
 </html>
