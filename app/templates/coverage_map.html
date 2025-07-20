@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LTE Hexagonal Coverage Map</title>
+    <style>
+        .container {
+            width: 90%;
+            margin: 0 auto;
+        }
+        #map {
+            height: 600px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .controls {
+            margin: 15px 0;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+        .legend {
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>LTE Hexagonal Coverage Map</h1>
+
+        <div class="controls">
+            <button id="loadData">Load Coverage Data</button>
+            <div class="legend">
+                <strong>Legend:</strong>
+                <div><span style="color: #1f78b4">■</span> LTE1800</div>
+                <div><span style="color: #e31a1c">■</span> LTE2100</div>
+            </div>
+        </div>
+
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/h3-js"></script>
+    <script>
+        // Инициализация карты
+        const map = L.map('map').setView([55.751244, 37.618423], 10);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Цвета для разных частот
+        const bandColors = {
+            'LTE1800': '#1f78b4',
+            'LTE2100': '#e31a1c'
+        };
+
+        // Загрузка данных
+        document.getElementById('loadData').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/coverage');
+                const hexData = await response.json();
+
+                // Очищаем предыдущие слои
+                map.eachLayer(layer => {
+                    if (layer instanceof L.Polygon) {
+                        map.removeLayer(layer);
+                    }
+                });
+
+                // Обрабатываем каждый гексагон
+                hexData.forEach(hex => {
+                    try {
+                        // Получаем границы гексагона
+                        const hexBoundary = h3.cellToBoundary(hex.h3_index, true);
+                        const latLngs = hexBoundary.map(point => L.latLng(point[0], point[1]));
+
+                        // Создаем полигон
+                        const polygon = L.polygon(latLngs, {
+                            fillColor: bandColors[hex.band] || '#888',
+                            fillOpacity: 0.7,
+                            weight: 1,
+                            color: '#fff'
+                        }).addTo(map);
+
+                        // Добавляем подсказку
+                        polygon.bindPopup(`
+                            <b>H3 Index:</b> ${hex.h3_index}<br>
+                            <b>Band:</b> ${hex.band}<br>
+                            <b>Avg RSRP:</b> ${hex.avg_rsrp?.toFixed(1) || 'N/A'} dBm<br>
+                            <b>Points:</b> ${hex.point_count}
+                        `);
+
+                    } catch (e) {
+                        console.error('Error processing hexagon:', hex.h3_index, e);
+                    }
+                });
+
+            } catch (e) {
+                console.error('Error loading data:', e);
+                alert('Error loading coverage data');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel
 
 class AreaRequest(BaseModel):
@@ -8,3 +10,13 @@ class AreaRequest(BaseModel):
 
 class CoverageResponse(BaseModel):
     map_image: str
+
+class CoveragePoint(BaseModel):
+    latitude: float
+    longitude: float
+    altitude: float
+    band: str
+    rsrp: float
+    rsrq: float
+    eventtime: datetime
+    h3_index: str
