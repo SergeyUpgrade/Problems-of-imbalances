@@ -17,10 +17,6 @@ if settings.DATA_FILE.exists():
 # Подключение API роутеров
 app.include_router(api_router)
 
-# Настройка статических файлов и шаблонов
-#app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="app/templates")
-
 @app.on_event("startup")
 async def startup_event():
     """Действия при запуске приложения"""

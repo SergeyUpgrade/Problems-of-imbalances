@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 
 from app.models.schemas import AreaRequest, CoverageResponse
 from app.services.coverage_service import get_coverage_data
@@ -8,6 +11,9 @@ import pandas as pd
 
 router = APIRouter()
 
+# Получаем абсолютный путь к директории с шаблонами
+BASE_DIR = Path(__file__).resolve().parent.parent
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 @router.get("/", response_class=HTMLResponse)
 async def show_map(request: Request):
