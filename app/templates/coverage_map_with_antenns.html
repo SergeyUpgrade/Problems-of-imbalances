@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Карта покрытия LTE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .map-container {
+            width: 80%;
+            margin: 0 auto;
+            text-align: center;
+        }
+        #coverage-map {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .legend {
+            margin: 20px 0;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .legend-item {
+            display: inline-block;
+            margin: 0 15px;
+        }
+        .legend-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="map-container">
+        <h1>Карта покрытия LTE</h1>
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-color" style="background: red;"></span>
+                <span>Базовая станция ({{ base_station }})</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: blue;"></span>
+                <span>LTE1800</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: green;"></span>
+                <span>LTE2100</span>
+            </div>
+        </div>
+        <div class="controls">
+            <button onclick="window.location.reload()">Обновить карту</button>
+            <span>Разрешение: </span>
+            <select onchange="updateResolution(this.value)">
+                <option value="7">Низкое</option>
+                <option value="8" selected>Среднее</option>
+                <option value="9">Высокое</option>
+            </select>
+        </div>
+        <img id="coverage-map" src="{{ map_image }}" alt="Карта покрытия">
+    </div>
+
+    <script>
+        function updateResolution(resolution) {
+            window.location.href = `/coverage?resolution=${resolution}`;
+        }
+    </script>
+</body>
+</html>

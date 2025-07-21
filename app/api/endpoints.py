@@ -323,7 +323,7 @@ def create_coverage_map():
         return None
 
 
-@router.get("/coverage_map_with ", response_class=HTMLResponse)
+@router.get("/coverage_map_with_antenns", response_class=HTMLResponse)
 async def show_coverage_map():
     """Отображает HTML страницу с картой покрытия"""
     map_image = create_coverage_map()
