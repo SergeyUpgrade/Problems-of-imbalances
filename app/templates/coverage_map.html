@@ -62,7 +62,8 @@
         // Загрузка данных
         document.getElementById('loadData').addEventListener('click', async () => {
             try {
-                const response = await fetch('/api/coverage');
+                // ИСПРАВЛЕННЫЙ URL ЗАПРОСА
+                const response = await fetch('/coverage-data');  // Было /api/coverage
                 const hexData = await response.json();
 
                 // Очищаем предыдущие слои

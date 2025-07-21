@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LTE Hexagonal Coverage</title>
+    <style>
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            text-align: center;
+        }
+        #hexmap {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .loading {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+        .error {
+            background-color: #fff1f0;
+            color: #f5222d;
+        }
+        button {
+            padding: 8px 16px;
+            background: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LTE Hexagonal Coverage Map</h1>
+        <button onclick="loadHexMap()">Generate Map</button>
+        <div id="status" class="status loading" style="display: none;">
+            Loading map...
+        </div>
+        <img id="hexmap" style="display: none;">
+    </div>
+
+    <script>
+        async function loadHexMap() {
+            const statusEl = document.getElementById('status');
+            const imgEl = document.getElementById('hexmap');
+
+            statusEl.style.display = 'block';
+            statusEl.className = 'status loading';
+            statusEl.textContent = 'Loading map...';
+            imgEl.style.display = 'none';
+
+            try {
+                const response = await fetch('/coverage-hexmap');
+                if (!response.ok) {
+                    throw new Error(await response.text());
+                }
+                const data = await response.json();
+
+                if (data.image) {
+                    imgEl.src = data.image;
+                    imgEl.style.display = 'block';
+                    statusEl.style.display = 'none';
+                } else {
+                    throw new Error('Invalid response format');
+                }
+            } catch (e) {
+                statusEl.className = 'status error';
+                statusEl.textContent = 'Error: ' + e.message;
+                console.error('Error:', e);
+            }
+        }
+    </script>
+</body>
+</html>

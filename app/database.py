@@ -108,3 +108,5 @@ def load_data_to_clickhouse(client, file_path):
     except Exception as e:
         print(f"Ошибка при загрузке данных: {str(e)}")
         raise
+
+
