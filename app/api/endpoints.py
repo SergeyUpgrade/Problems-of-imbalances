@@ -1,29 +1,16 @@
-import h3
 from typing import List, Dict, Any
 from pathlib import Path
 from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import HTMLResponse,Response
+from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from matplotlib import pyplot as plt
-import matplotlib.pyplot as plt
-import numpy as np
-import h3
-from io import BytesIO
-import base64
 from matplotlib.lines import Line2D
-from fastapi import APIRouter
-from fastapi.responses import JSONResponse
-
-from app.database import get_clickhouse_client
 from app.config import settings
 from app.database import get_clickhouse_client
 from app.models.schemas import AreaRequest, CoverageResponse
-from app.services.coverage_clusters import plot_coverage_clusters
 from app.services.coverage_service import get_coverage_data
 from app.services.mapping_service import create_coverage_map
 import pandas as pd
 import logging
-from fastapi import APIRouter, HTTPException
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import h3
